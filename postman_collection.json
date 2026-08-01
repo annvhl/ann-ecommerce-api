@@ -1,0 +1,329 @@
+{
+  "info": {
+    "name": "Ecommerce API - Batman Technology Phase 2",
+    "description": "Backend REST API for the e-commerce database. Base URL uses the {{base_url}} variable (default http://localhost:3000). Includes valid requests and deliberately invalid requests to demonstrate 200/201/400/404/409 status codes.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:3000" }
+  ],
+  "item": [
+    {
+      "name": "Products",
+      "item": [
+        {
+          "name": "GET all products (default)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/products", "host": ["{{base_url}}"], "path": ["api","products"] }
+          }
+        },
+        {
+          "name": "GET products - pagination (page 2, limit 5)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/products?page=2&limit=5",
+              "host": ["{{base_url}}"], "path": ["api","products"],
+              "query": [{ "key": "page", "value": "2" }, { "key": "limit", "value": "5" }]
+            }
+          }
+        },
+        {
+          "name": "GET products - sort by price desc",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/products?sort=price&order=desc",
+              "host": ["{{base_url}}"], "path": ["api","products"],
+              "query": [{ "key": "sort", "value": "price" }, { "key": "order", "value": "desc" }]
+            }
+          }
+        },
+        {
+          "name": "GET products - filter by category_id=2",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/products?category_id=2",
+              "host": ["{{base_url}}"], "path": ["api","products"],
+              "query": [{ "key": "category_id", "value": "2" }]
+            }
+          }
+        },
+        {
+          "name": "GET product by id (valid, 200)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/products/1", "host": ["{{base_url}}"], "path": ["api","products","1"] }
+          }
+        },
+        {
+          "name": "GET product by id - NOT FOUND (404)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/products/9999", "host": ["{{base_url}}"], "path": ["api","products","9999"] }
+          }
+        },
+        {
+          "name": "POST create product (valid, 201)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"category_id\": 1,\n  \"name\": \"Test Webcam HD\",\n  \"description\": \"1080p USB webcam\",\n  \"price\": 49.99,\n  \"stock_quantity\": 25,\n  \"sku\": \"SKU-CAM-TEST-01\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/products", "host": ["{{base_url}}"], "path": ["api","products"] }
+          }
+        },
+        {
+          "name": "POST create product - missing required fields (400)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Missing name, category_id, and price\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/products", "host": ["{{base_url}}"], "path": ["api","products"] }
+          }
+        },
+        {
+          "name": "POST create product - negative price (400)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"category_id\": 1,\n  \"name\": \"Bad Product\",\n  \"price\": -10\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/products", "host": ["{{base_url}}"], "path": ["api","products"] }
+          }
+        },
+        {
+          "name": "POST create product - category does not exist (404)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"category_id\": 9999,\n  \"name\": \"Orphan Product\",\n  \"price\": 20\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/products", "host": ["{{base_url}}"], "path": ["api","products"] }
+          }
+        },
+        {
+          "name": "POST create product - duplicate SKU (409)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"category_id\": 1,\n  \"name\": \"Duplicate SKU Test\",\n  \"price\": 30,\n  \"sku\": \"SKU-LAP-001\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/products", "host": ["{{base_url}}"], "path": ["api","products"] }
+          }
+        },
+        {
+          "name": "PUT update product (valid, 200)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"price\": 949.99,\n  \"stock_quantity\": 12\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/products/1", "host": ["{{base_url}}"], "path": ["api","products","1"] }
+          }
+        },
+        {
+          "name": "PUT update product - not found (404)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"price\": 100\n}" },
+            "url": { "raw": "{{base_url}}/api/products/9999", "host": ["{{base_url}}"], "path": ["api","products","9999"] }
+          }
+        },
+        {
+          "name": "PATCH deactivate product (valid, 200)",
+          "request": {
+            "method": "PATCH",
+            "url": { "raw": "{{base_url}}/api/products/4/deactivate", "host": ["{{base_url}}"], "path": ["api","products","4","deactivate"] }
+          }
+        },
+        {
+          "name": "DELETE product - blocked by order history (409)",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{base_url}}/api/products/1", "host": ["{{base_url}}"], "path": ["api","products","1"] }
+          }
+        },
+        {
+          "name": "DELETE product - not found (404)",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{base_url}}/api/products/9999", "host": ["{{base_url}}"], "path": ["api","products","9999"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Categories",
+      "item": [
+        {
+          "name": "GET all categories",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/categories", "host": ["{{base_url}}"], "path": ["api","categories"] }
+          }
+        },
+        {
+          "name": "GET category by id (valid, 200)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/categories/1", "host": ["{{base_url}}"], "path": ["api","categories","1"] }
+          }
+        },
+        {
+          "name": "GET category by id - not found (404)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/categories/9999", "host": ["{{base_url}}"], "path": ["api","categories","9999"] }
+          }
+        },
+        {
+          "name": "POST create category (valid, 201)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Smart Home\",\n  \"description\": \"Smart plugs, bulbs and hubs\"\n}" },
+            "url": { "raw": "{{base_url}}/api/categories", "host": ["{{base_url}}"], "path": ["api","categories"] }
+          }
+        },
+        {
+          "name": "POST create category - missing name (400)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"description\": \"No name provided\"\n}" },
+            "url": { "raw": "{{base_url}}/api/categories", "host": ["{{base_url}}"], "path": ["api","categories"] }
+          }
+        },
+        {
+          "name": "POST create category - duplicate name (409)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Computers\"\n}" },
+            "url": { "raw": "{{base_url}}/api/categories", "host": ["{{base_url}}"], "path": ["api","categories"] }
+          }
+        },
+        {
+          "name": "PUT update category (valid, 200)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"description\": \"Updated description\"\n}" },
+            "url": { "raw": "{{base_url}}/api/categories/1", "host": ["{{base_url}}"], "path": ["api","categories","1"] }
+          }
+        },
+        {
+          "name": "DELETE category - blocked by linked products (409)",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{base_url}}/api/categories/1", "host": ["{{base_url}}"], "path": ["api","categories","1"] }
+          }
+        },
+        {
+          "name": "DELETE category - not found (404)",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{base_url}}/api/categories/9999", "host": ["{{base_url}}"], "path": ["api","categories","9999"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "GET all users",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/users", "host": ["{{base_url}}"], "path": ["api","users"] }
+          }
+        },
+        {
+          "name": "GET user by id (valid, 200)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/users/1", "host": ["{{base_url}}"], "path": ["api","users","1"] }
+          }
+        },
+        {
+          "name": "GET user by id - not found (404)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/users/9999", "host": ["{{base_url}}"], "path": ["api","users","9999"] }
+          }
+        },
+        {
+          "name": "POST create user (valid, 201)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"full_name\": \"Test User\",\n  \"email\": \"test.user.postman@example.com\",\n  \"phone\": \"0799999999\"\n}" },
+            "url": { "raw": "{{base_url}}/api/users", "host": ["{{base_url}}"], "path": ["api","users"] }
+          }
+        },
+        {
+          "name": "POST create user - invalid email format (400)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"full_name\": \"Bad Email User\",\n  \"email\": \"not-an-email\"\n}" },
+            "url": { "raw": "{{base_url}}/api/users", "host": ["{{base_url}}"], "path": ["api","users"] }
+          }
+        },
+        {
+          "name": "POST create user - duplicate email (409)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"full_name\": \"Duplicate Test\",\n  \"email\": \"sara.ahmad@example.com\"\n}" },
+            "url": { "raw": "{{base_url}}/api/users", "host": ["{{base_url}}"], "path": ["api","users"] }
+          }
+        },
+        {
+          "name": "PATCH update user status (valid, 200)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"is_active\": false\n}" },
+            "url": { "raw": "{{base_url}}/api/users/8/status", "host": ["{{base_url}}"], "path": ["api","users","8","status"] }
+          }
+        },
+        {
+          "name": "PATCH update user status - invalid value (400)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"is_active\": \"yes\"\n}" },
+            "url": { "raw": "{{base_url}}/api/users/1/status", "host": ["{{base_url}}"], "path": ["api","users","1","status"] }
+          }
+        },
+        {
+          "name": "PATCH update user status - not found (404)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"is_active\": true\n}" },
+            "url": { "raw": "{{base_url}}/api/users/9999/status", "host": ["{{base_url}}"], "path": ["api","users","9999","status"] }
+          }
+        }
+      ]
+    }
+  ]
+}
